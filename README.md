@@ -34,3 +34,8 @@ private static void OnServerError(object sender, ServerStartErrorEventArgs e)
 }
 
 ```
+
+# CLI
+```shell
+EasyHttpServerCLI /p:"http://localhost:5001/,http://localhost:5002/" /x:C:\tmp\wwwroot
+```
