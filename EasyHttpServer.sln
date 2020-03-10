@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29827.131
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyHttpServer", "EasyHttpServer\EasyHttpServer.csproj", "{BB25214F-73D3-408C-BEBC-A1591DB264A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyHttpServerCLI", "EasyHttpServerTestConsole\EasyHttpServerCLI.csproj", "{4D9E1B10-94B2-4340-B713-F52398666B4B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasyHttpServerCLI", "EasyHttpServerCLI\EasyHttpServerCLI.csproj", "{4D9E1B10-94B2-4340-B713-F52398666B4B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
