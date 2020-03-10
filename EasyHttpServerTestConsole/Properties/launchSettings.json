@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "EasyHttpServerCLI": {
+      "commandName": "Project",
+      "commandLineArgs": "/p:http://localhost:5002/ /x:C:\\tmp\\wwwroot"
+    }
+  }
+}
