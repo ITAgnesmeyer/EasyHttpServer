@@ -6,6 +6,7 @@ using EasyHttpServer;
 
 namespace EasyHttpServerCLI
 {
+
     class Optíons
     {
         private Dictionary<string, string> _Args;
