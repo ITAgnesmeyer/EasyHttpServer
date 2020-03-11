@@ -1,5 +1,6 @@
 ﻿using MimeTypeExtension;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -26,6 +27,8 @@ namespace EasyHttpServer
 
         public event EventHandler<ServerStartErrorEventArgs> ServerError;
         public event EventHandler<ServerStatusEventArgs> ServerLog;
+        public event EventHandler<ServerPreRequestHandlerEventArgs> PreResponseHandler;
+        public event EventHandler<ServerPreRequestExceptionEventArgs> PreRequestException;
         public HttpServer(string[] listenerUrl, string rootPath = "./")
         {
             this.RootPath = rootPath;
@@ -139,44 +142,49 @@ namespace EasyHttpServer
                             OnServerLog(new ServerStatusEventArgs("request:" + context.Request.Url, 0));
                             //CORS
                             response.Headers.Add("Access-Control-Allow-Origin:*");
-                            if (!found)
+
+                            ServerPreRequestHandlerEventArgs args = new ServerPreRequestHandlerEventArgs(context.Request);
+                            try
                             {
-
-
-                                string message = string.Format(server.NotFoundMessage, absPath);
-                                SendNotFoundResponse(message, response, server.DefaultErrorResponseType);
-                                OnServerLog(new ServerStatusEventArgs(message, response.StatusCode));
-                                continue;
-
-
-                            }
-                            response.StatusCode = (int)HttpStatusCode.OK;
-                            if (File.Exists(path))
-                            {
-                                FileInfo fi = new FileInfo(path);
-                                response.ContentType = fi.MimeTypeOrDefault();
                                 try
                                 {
-                                    byte[] bytes = File.ReadAllBytes(path);
-                                    using (Stream output = response.OutputStream)
-                                    {
-                                        output.Write(bytes, 0, bytes.Length);
-                                    }
+                                    OnPreResponseHandler(args);
                                 }
                                 catch (Exception e)
                                 {
-                                    string message = string.Format(server.InternalServerErrorMessage, e.Message);
-                                    SendInternalServerError(response, message, server.DefaultErrorResponseType);
-                                    OnServerError(new ServerStartErrorEventArgs(e));
+                                    OnPreRequestException(new ServerPreRequestExceptionEventArgs(args, e));
+
                                 }
 
                             }
-                            else
+                            catch (Exception e)
                             {
-                                string message = string.Format(server.BadRequestMessage, absPath);
-                                SendBadRequestResponse(response, message, server.DefaultErrorResponseType);
-                                OnServerLog(new ServerStatusEventArgs(message, (int)HttpStatusCode.BadRequest));
+                                OnServerError(new ServerStartErrorEventArgs(e));
+                                response.Close();
+                                continue;
                             }
+                            if (args.Handled)
+                            {
+                                if (args.AdditionalHeaders.Count > 0)
+                                {
+                                    response.Headers.Add(args.AdditionalHeaders);
+                                }
+
+                                response.ContentType = args.MimeType;
+                                response.StatusCode = (int)args.ReturnStatus;
+                                byte[] bytes = Encoding.UTF8.GetBytes(args.ContentToSend);
+                                response.OutputStream.Write(bytes, 0, bytes.Length);
+                                response.Close();
+                                continue;
+                            }
+
+                            if (HandleFileContent(found, server, absPath, response, path))
+                            {
+                                response.Close();
+                                continue;
+
+                            }
+                                
 
                             response.Close();
                         }
@@ -198,6 +206,47 @@ namespace EasyHttpServer
 
                 this.CurrentListener?.Close();
             }
+        }
+
+        private bool HandleFileContent(bool found, HttpServer server, string absPath, HttpListenerResponse response,
+            string path)
+        {
+            if (!found)
+            {
+                string message = string.Format(server.NotFoundMessage, absPath);
+                SendNotFoundResponse(message, response, server.DefaultErrorResponseType);
+                OnServerLog(new ServerStatusEventArgs(message, response.StatusCode));
+                return true;
+            }
+
+            response.StatusCode = (int) HttpStatusCode.OK;
+            if (File.Exists(path))
+            {
+                FileInfo fi = new FileInfo(path);
+                response.ContentType = fi.MimeTypeOrDefault();
+                try
+                {
+                    byte[] bytes = File.ReadAllBytes(path);
+                    using (Stream output = response.OutputStream)
+                    {
+                        output.Write(bytes, 0, bytes.Length);
+                    }
+                }
+                catch (Exception e)
+                {
+                    string message = string.Format(server.InternalServerErrorMessage, e.Message);
+                    SendInternalServerError(response, message, server.DefaultErrorResponseType);
+                    OnServerError(new ServerStartErrorEventArgs(e));
+                }
+            }
+            else
+            {
+                string message = string.Format(server.BadRequestMessage, absPath);
+                SendBadRequestResponse(response, message, server.DefaultErrorResponseType);
+                OnServerLog(new ServerStatusEventArgs(message, (int) HttpStatusCode.BadRequest));
+            }
+
+            return false;
         }
 
         private void SendBadRequestResponse(HttpListenerResponse response, string message, string contentType)
@@ -270,8 +319,21 @@ namespace EasyHttpServer
 
         public void Dispose()
         {
-            this.MainTask?.Dispose();
+            if(MainTask != null)
+                this.MainTask.Dispose();
             ((IDisposable)this.CurrentListener)?.Dispose();
         }
+
+        protected virtual void OnPreResponseHandler(ServerPreRequestHandlerEventArgs e)
+        {
+            PreResponseHandler?.Invoke(this, e);
+        }
+
+        protected virtual void OnPreRequestException(ServerPreRequestExceptionEventArgs e)
+        {
+            PreRequestException?.Invoke(this, e);
+        }
     }
+
+    
 }

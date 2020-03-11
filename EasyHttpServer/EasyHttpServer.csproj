@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>A little easy http-Server</Description>
+    <Copyright>Dipl.-Ing.(FH) Guido Agnesmeyer</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/ITAgnesmeyer/EasyHttpServer</PackageProjectUrl>
+    <PackageTags>dotnet-std http-server</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

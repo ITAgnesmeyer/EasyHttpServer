@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using EasyHttpServer;
+using Newtonsoft.Json;
 
 namespace EasyHttpServerCLI
 {
@@ -75,12 +77,36 @@ namespace EasyHttpServerCLI
                 new HttpServer(prefixes,basePath);
             server.ServerError+=OnServerError;
             server.ServerLog+=OnServerLog;
-            server.StartAsync().Wait();
+            //server.PreResponseHandler+=OnPreHandler;
+            //server.PreRequestException+=OnPreHandlerException;
+            server.Start();
             while (server.IsRunning())
             {
                 Thread.Sleep(100);
             }
         }
+
+        //private static void OnPreHandlerException(object sender, ServerPreRequestExceptionEventArgs e)
+        //{
+
+           
+        //}
+
+        //private static void OnPreHandler(object sender, ServerPreRequestHandlerEventArgs e)
+        //{
+        //    switch (e.Request.Url.LocalPath)
+        //    {
+        //        case "/api":
+        //            var obj = new {message = "halloX"};
+        //            e.ContentToSend = JsonConvert.SerializeObject(obj);
+        //            e.Handled = true;
+        //            break;
+        //        default:
+        //            e.Handled = false;
+        //            break;
+        //    }
+        //}
+
         static Optíons GetOptions(string[] args)
         {
             Dictionary<string, string> retval = args.ToDictionary(
