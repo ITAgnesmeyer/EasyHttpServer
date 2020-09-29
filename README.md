@@ -34,6 +34,27 @@ private static void OnServerError(object sender, ServerStartErrorEventArgs e)
 }
 
 ```
+## Build your own API's
+```c#
+ server.PreResponseHandler += OnPreHandler;
+ server.PreRequestException += OnPreHandlerException;
+ ...
+ private static void OnPreHandler(object sender, ServerPreRequestHandlerEventArgs e)
+ {
+     switch (e.Request.Url.LocalPath)
+     {
+         case "/api":
+             var obj = new { message = "halloX" };
+             e.ContentToSend = JsonConvert.SerializeObject(obj);
+             e.Handled = true;
+             break;
+         default:
+             e.Handled = false;
+             break;
+     }
+ }
+ 
+```
 
 # CLI
 ```shell
