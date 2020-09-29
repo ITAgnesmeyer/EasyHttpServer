@@ -8,10 +8,10 @@ using Newtonsoft.Json;
 namespace EasyHttpServerCLI
 {
 
-    class Optíons
+    class Options
     {
         private Dictionary<string, string> _Args;
-        public Optíons(Dictionary<string,string> args)
+        public Options(Dictionary<string,string> args)
         {
             this._Args = args;
         }
@@ -106,7 +106,7 @@ namespace EasyHttpServerCLI
         //    }
         //}
 
-        static Optíons GetOptions(string[] args)
+        static Options GetOptions(string[] args)
         {
             Dictionary<string, string> retval = args.ToDictionary(
                 k => k.Split(new[] { ':' }, 2)[0].ToLower(),
@@ -114,7 +114,7 @@ namespace EasyHttpServerCLI
                     ? v.Split(new[] { ':' }, 2)[1] 
                     : null);
 
-            Optíons ops = new Optíons(retval);
+            Options ops = new Options(retval);
             return ops;
         }
         private static void OnServerLog(object sender, ServerStatusEventArgs e)
