@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using EasyHttpServer;
 using Newtonsoft.Json;
@@ -55,7 +54,7 @@ namespace EasyHttpServerCLI
             }
             if (!options.ContainsPrefix)
             {
-                Console.WriteLine("please give prefix e.g=> /p:\"http://localhost:5001,https://localhost:5002\"");
+                Console.WriteLine("please give prefix e.g=> /p:\"http://localhost:5001/,https://localhost:5002/\"");
                 Console.WriteLine("");
                 return;
             }
@@ -77,8 +76,8 @@ namespace EasyHttpServerCLI
                 new HttpServer(prefixes,basePath);
             server.ServerError+=OnServerError;
             server.ServerLog+=OnServerLog;
-            //server.PreResponseHandler+=OnPreHandler;
-            //server.PreRequestException+=OnPreHandlerException;
+            //server.PreResponseHandler += OnPreHandler;
+            //server.PreRequestException += OnPreHandlerException;
             server.Start();
             while (server.IsRunning())
             {
@@ -89,7 +88,7 @@ namespace EasyHttpServerCLI
         //private static void OnPreHandlerException(object sender, ServerPreRequestExceptionEventArgs e)
         //{
 
-           
+
         //}
 
         //private static void OnPreHandler(object sender, ServerPreRequestHandlerEventArgs e)
@@ -97,7 +96,7 @@ namespace EasyHttpServerCLI
         //    switch (e.Request.Url.LocalPath)
         //    {
         //        case "/api":
-        //            var obj = new {message = "halloX"};
+        //            var obj = new { message = "halloX" };
         //            e.ContentToSend = JsonConvert.SerializeObject(obj);
         //            e.Handled = true;
         //            break;
@@ -110,9 +109,9 @@ namespace EasyHttpServerCLI
         static Optíons GetOptions(string[] args)
         {
             Dictionary<string, string> retval = args.ToDictionary(
-                k => k.Split(new char[] { ':' }, 2)[0].ToLower(),
-                v => v.Split(new char[] { ':' }, 2).Count() > 1 
-                    ? v.Split(new char[] { ':' }, 2)[1] 
+                k => k.Split(new[] { ':' }, 2)[0].ToLower(),
+                v => v.Split(new[] { ':' }, 2).Count() > 1 
+                    ? v.Split(new[] { ':' }, 2)[1] 
                     : null);
 
             Optíons ops = new Optíons(retval);
