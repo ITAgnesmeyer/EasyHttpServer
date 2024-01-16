@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <Description>A little easy http-Server</Description>
     <Copyright>Dipl.-Ing.(FH) Guido Agnesmeyer</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
