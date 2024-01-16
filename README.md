@@ -60,5 +60,12 @@ private static void OnServerError(object sender, ServerStartErrorEventArgs e)
 ```shell
 EasyHttpServerCLI /p:"http://localhost:5001/,http://localhost:5002/" /x:C:\tmp\wwwroot
 ```
+# HTTPS
+Use the BindingsTool to view or set HTTPS bindings.
 
-2020 Dipl.-Ing.(FH) Guido Agnesmeyer
+See: https://github.com/segor/SslCertBinding.Net
+
+
+
+
+2024 Dipl.-Ing.(FH) Guido Agnesmeyer
