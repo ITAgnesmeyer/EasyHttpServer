@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using EasyHttpServer;
-using Newtonsoft.Json;
+
 
 namespace EasyHttpServerCLI
 {
@@ -11,7 +11,7 @@ namespace EasyHttpServerCLI
     class Options
     {
         private Dictionary<string, string> _Args;
-        public Options(Dictionary<string,string> args)
+        public Options(Dictionary<string, string> args)
         {
             this._Args = args;
         }
@@ -19,7 +19,7 @@ namespace EasyHttpServerCLI
         {
             get => this._Args.ContainsKey("/?");
         }
-        
+
         public bool ContainsBasePath
         {
             get => this._Args.ContainsKey("/x");
@@ -46,24 +46,21 @@ namespace EasyHttpServerCLI
             var options = GetOptions(args);
             if (options.Help)
             {
-                Console.WriteLine("parameters:");
-                Console.WriteLine("/p:[prefixes] => set the base urls to listen to.");
-                Console.WriteLine("/x:[path] => set the path to the Folder to search the files.");
-                Console.WriteLine("\t\tdefault is the current path of the app");
+                PrintHelp();
                 return;
             }
             if (!options.ContainsPrefix)
             {
                 Console.WriteLine("please give prefix e.g=> /p:\"http://localhost:5001/,https://localhost:5002/\"");
-                Console.WriteLine("");
+                PrintHelp();
                 return;
             }
 
-            string[] prefixes = {"http://localhost:5001/"};
+            string[] prefixes = { "http://localhost:5001/" };
             if (options.ContainsPrefix)
             {
                 prefixes = options.Prefix.Split(",");
-                
+
             }
 
             string basePath = "./";
@@ -73,9 +70,9 @@ namespace EasyHttpServerCLI
             }
 
             using var server =
-                new HttpServer(prefixes,basePath);
-            server.ServerError+=OnServerError;
-            server.ServerLog+=OnServerLog;
+                new HttpServer(prefixes, basePath);
+            server.ServerError += OnServerError;
+            server.ServerLog += OnServerLog;
             //server.PreResponseHandler += OnPreHandler;
             //server.PreRequestException += OnPreHandlerException;
             server.Start();
@@ -110,8 +107,8 @@ namespace EasyHttpServerCLI
         {
             Dictionary<string, string> retval = args.ToDictionary(
                 k => k.Split(new[] { ':' }, 2)[0].ToLower(),
-                v => v.Split(new[] { ':' }, 2).Count() > 1 
-                    ? v.Split(new[] { ':' }, 2)[1] 
+                v => v.Split(new[] { ':' }, 2).Count() > 1
+                    ? v.Split(new[] { ':' }, 2)[1]
                     : null);
 
             Options ops = new Options(retval);
@@ -127,6 +124,12 @@ namespace EasyHttpServerCLI
             Console.WriteLine(e.Message);
         }
 
-
+        private static void PrintHelp()
+        {
+            Console.WriteLine("parameters:");
+            Console.WriteLine("/p:[prefixes] => set the base urls to listen to.");
+            Console.WriteLine("/x:[path] => set the path to the Folder to search the files.");
+            Console.WriteLine("\t\tdefault is the current path of the app");
+        }
     }
 }
